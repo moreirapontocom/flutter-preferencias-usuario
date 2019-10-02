@@ -14,25 +14,53 @@ class _HomeState extends State<Home> {
   _salvar() async {
 
     String _valorDigitado = _campoTexto.text;
+    String _return = "";
 
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString("nome", _valorDigitado);
+    if (_valorDigitado.isEmpty) {
+      _return = "Digite algo";
+    } else {
 
-    _campoTexto.text = "";
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString("nome", _valorDigitado); // setString() precisa do await
+
+      _campoTexto.text = "";
+      _return = "Dados salvos!";
+
+      // Dismiss keyboard
+      FocusScope.of(context).requestFocus(new FocusNode());
+
+    }
 
     setState(() {
-      _texto = "Dados salvos!";
+      _texto = _return;
+    });
+  }
+
+  _ler() async {
+
+    final prefs = await SharedPreferences.getInstance();
+    String _return = "";
+
+    if (prefs.containsKey("nome")) {
+      _return = prefs.getString("nome"); // getString() não precisa do await
+    } else {
+      _return = "Nada para ler";
+    }
+
+    setState(() {
+      _texto = _return;
     });
 
-    // Dismiss keyboard
-    FocusScope.of(context).requestFocus(new FocusNode());
   }
 
-  _ler() {
+  _remover() async {
 
-  }
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove("nome"); // remove() precisa do await
 
-  _remover() {
+    setState(() {
+      _texto = "Removido";
+    });
 
   }
 
